@@ -1,6 +1,6 @@
 {
     "dependencies": {
-        "node-addon-api": "5.0.0"
+        "node-addon-api": "^5.0.0"
     },
     "description": "configurable health check server with built-in prometheus metrics for cpu and gpu usage",
     "devDependencies": {
@@ -21,10 +21,10 @@
     },
     "license": "MIT",
     "main": "index.js",
-    "name": "@twicpics/health-check",
+    "name": "@david-cupist/health-check",
     "repository": {
         "type": "git",
-        "url": "http://github.com/twicpics/health-check.git"
+        "url": "https://github.com/david-cupist/health-check"
     },
     "version": "0.5.0"
 }

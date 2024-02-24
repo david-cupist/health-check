@@ -92,22 +92,36 @@ class Custom
         }
 
     public:
-        inline std::future< std::vector< Metric > > get_metrics() const
-        {
-            auto promise = std::make_shared< std::promise< std::vector< Metric > > >();
-            m_function.NonBlockingCall(
-                [ promise, this ]( Napi::Env env, Napi::Function function )
+        #ifdef __cpp_exceptions
+                inline std::future< std::vector< Metric > > get_metrics() const
                 {
-                    try
-                    {
-                        handle_return_value( function.Call( {} ), promise );
-                    }
-                    catch ( Napi::Error const & )
-                    {
-                        promise->set_value( {} );
-                    }
+                    auto promise = std::make_shared< std::promise< std::vector< Metric > > >();
+                    m_function.NonBlockingCall(
+                        [ promise, this ]( Napi::Env env, Napi::Function function )
+                        {
+                            try
+                            {
+                                handle_return_value( function.Call( {} ), promise );
+                            }
+                            catch ( Napi::Error const & )
+                            {
+                                promise->set_value( {} );
+                            }
+                        }
+                    );
+                    return promise->get_future();
                 }
-            );
-            return promise->get_future();
-        }
+        #else
+                inline std::future< std::vector< Metric > > get_metrics() const
+                {
+                    auto promise = std::make_shared< std::promise< std::vector< Metric > > >();
+                    m_function.NonBlockingCall(
+                        [ promise, this ]( Napi::Env env, Napi::Function function )
+                        {
+                            handle_return_value( function.Call( {} ), promise );
+                        }
+                    );
+                    return promise->get_future();
+                }
+        #endif
 };

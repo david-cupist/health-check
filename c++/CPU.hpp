@@ -2,7 +2,9 @@
 
 extern "C"
 {
-    #include <sys/sysinfo.h>
+    #if !defined(__APPLE__)
+        #include <sys/sysinfo.h>
+    #endif
 }
 
 #include <fstream>
@@ -80,11 +82,16 @@ class CPU
                 }
                 m_cores = now.m_cores;
             }
+
             // memory
             {
-                struct sysinfo data;
-                sysinfo( &data );
-                handler( "cpu", "memory", 1. - ( ( double ) data.freeram ) / ( ( double ) data.totalram ), 0 ); 
+                #if !defined(__APPLE__)
+                    struct sysinfo data;
+                    sysinfo( &data );
+                    handler( "cpu", "memory", 1. - ( ( double ) data.freeram ) / ( ( double ) data.totalram ), 0 ); 
+                #else
+                    handler( "cpu", "memory", 0., 0 );
+                #endif
             }
         }
 };
